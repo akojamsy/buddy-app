@@ -1,5 +1,5 @@
-import { lazy } from 'react'
-
 import SignIn from './auth/sign-in'
+import SignUp from './auth/sign-up'
+import Dashboard from './protected/dashboard'
 
-export { SignIn }
+export { SignIn, SignUp, Dashboard }

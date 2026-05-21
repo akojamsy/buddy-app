@@ -1,5 +1,6 @@
 const routesPath = {
-  SIGNIN: '/',
+  SIGNUP: '/',
+  SIGNIN: '/login',
   DASHBOARD: '/dashboard',
 }
 
