@@ -230,3 +230,19 @@ export const EyeIcon = (props: SVGProps<SVGSVGElement>) => (
     ></path>
   </svg>
 )
+
+export const CheckIcon = (props: SVGProps<SVGSVGElement>) => (
+  <svg
+    xmlns='http://www.w3.org/2000/svg'
+    width='20'
+    height='15'
+    fill='none'
+    viewBox='0 0 20 15'
+    {...props}
+  >
+    <path
+      fill='#119C2B'
+      d='M7.84 13.764a1.475 1.475 0 0 1-2.09 0L.434 8.447a1.475 1.475 0 0 1 0-2.089 1.475 1.475 0 0 1 2.089 0l4.266 4.266L16.978.434a1.475 1.475 0 0 1 2.089 0c.577.577.577 1.51 0 2.088z'
+    ></path>
+  </svg>
+)

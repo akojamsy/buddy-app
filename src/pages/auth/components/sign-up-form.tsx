@@ -1,12 +1,14 @@
 import { CustomButton } from '@/components/fragments'
 import { Input } from '#components/ui/input'
 import { Formik } from 'formik'
+import { CircleCheck } from 'lucide-react'
 import { useState } from 'react'
 import * as Yup from 'yup'
 import { AuthCard } from './auth-card'
 import { AuthCardHeader } from '../../../components/fragments/auth-card-header'
 import { AuthFooterLinks, AuthLoginPrompt } from './auth-footer-links'
 import {
+  CheckIcon,
   EmailIcon,
   EyeIcon,
   EyeslashIcon,
@@ -15,15 +17,26 @@ import {
   UserOneIcon,
 } from '@/assets/svg'
 
+const EMAIL_MAX_LENGTH = 60
+const PASSWORD_MAX_LENGTH = 15
+
 const signUpSchema = Yup.object({
   firstName: Yup.string().trim().required('First name is required'),
   lastName: Yup.string().trim().required('Last name is required'),
   email: Yup.string()
     .trim()
     .email('Enter a valid work email')
+    .max(
+      EMAIL_MAX_LENGTH,
+      `Email must be at most ${EMAIL_MAX_LENGTH} characters`,
+    )
     .required('Work email is required'),
   password: Yup.string()
     .min(8, 'Password must be at least 8 characters')
+    .max(
+      PASSWORD_MAX_LENGTH,
+      `Password must be at most ${PASSWORD_MAX_LENGTH} characters`,
+    )
     .required('Password is required'),
 })
 
@@ -59,7 +72,7 @@ export function SignUpForm() {
         validateOnMount
         onSubmit={(values) => {
           // TODO: connect to registration API
-          void { ...values, email: values.email.trim() }
+          console.log(values)
         }}
       >
         {({
@@ -109,18 +122,33 @@ export function SignUpForm() {
               label='Email'
               leftIcon={{ icon: EmailIcon, className: 'size-6' }}
               labelIcon={{ icon: InfoIcon, className: 'size-5' }}
+              rightIcon={
+                values.email && !errors.email
+                  ? {
+                      icon: CheckIcon,
+                      className: 'size-5 text-[#119C2B]',
+                      ariaLabel: 'Valid email',
+                    }
+                  : undefined
+              }
               type='email'
               name='email'
               autoComplete='email'
+              maxLength={EMAIL_MAX_LENGTH}
               value={values.email}
-              onChange={handleChange}
-              onBlur={(e) => {
-                handleBlur(e)
-                void setFieldValue('email', e.target.value.trim())
+              onChange={(e) => {
+                void setFieldValue(
+                  'email',
+                  e.target.value.replace(/\s/g, '').slice(0, EMAIL_MAX_LENGTH),
+                )
               }}
+              onBlur={handleBlur}
               error={fieldError(touched.email, errors.email)}
+              characterCount={{
+                current: values.email.length,
+                max: EMAIL_MAX_LENGTH,
+              }}
               placeholder='Work email'
-              className=''
             />
 
             <Input
@@ -136,16 +164,26 @@ export function SignUpForm() {
               type={showPassword ? 'text' : 'password'}
               name='password'
               autoComplete='new-password'
+              maxLength={PASSWORD_MAX_LENGTH}
               value={values.password}
-              onChange={handleChange}
+              onChange={(e) => {
+                void setFieldValue(
+                  'password',
+                  e.target.value.slice(0, PASSWORD_MAX_LENGTH),
+                )
+              }}
               onBlur={handleBlur}
               error={fieldError(touched.password, errors.password)}
+              characterCount={{
+                current: values.password.length,
+                max: PASSWORD_MAX_LENGTH,
+              }}
               placeholder='Password'
             />
 
             <CustomButton
               type='submit'
-              className='mt-7.5'
+              className='mt-7.5 cursor-pointer'
               disabled={!isValid}
               loading={isSubmitting}
               loadingText='Creating account...'

@@ -53,18 +53,16 @@ function renderLabelIcon(
 
 export type InputProps = React.ComponentProps<'input'> & {
   label?: string
-  /** When true, label is always shown above; border uses #FF8600 when focused or filled */
   floatingLabel?: boolean
   labelIcon?: InputLabelIconSlot
   leftIcon?: InputIconSlot
   rightIcon?: InputIconSlot
   wrapperClassName?: string
   labelClassName?: string
-  /** Validation message from Formik `errors` / Yup (show when field is touched) */
   error?: string
-  /** Shows a required indicator on the label */
   isRequired?: boolean
   errorClassName?: string
+  characterCount?: { current: number; max: number }
 }
 
 function Input({
@@ -79,6 +77,7 @@ function Input({
   labelClassName,
   errorClassName,
   error,
+  characterCount,
   isRequired = false,
   id: idProp,
   placeholder,
@@ -105,14 +104,20 @@ function Input({
 
   const floatingText = label ?? placeholder ?? ''
   const useFloating = floatingLabel && Boolean(floatingText)
-  /** With a visible label, allow a separate in-field placeholder; otherwise label text comes from placeholder only */
   const inputPlaceholder =
     useFloating && label ? placeholder : useFloating ? undefined : placeholder
   const useStaticLabel = Boolean(label) && !useFloating
 
   const hasIcons = Boolean(leftIcon || rightIcon)
-  const hasWrapper = hasIcons || useStaticLabel || useFloating || Boolean(error)
   const hasError = Boolean(error)
+  const hasWrapper =
+    hasIcons ||
+    useStaticLabel ||
+    useFloating ||
+    hasError ||
+    Boolean(characterCount)
+  const showCharacterCount = Boolean(characterCount) && hasValue
+  const showFooter = hasError || showCharacterCount
 
   const inputId = idProp ?? (hasWrapper ? generatedId : undefined)
 
@@ -250,14 +255,28 @@ function Input({
           ))}
       </div>
 
-      {hasError && (
-        <p
-          id={errorId}
-          role='alert'
-          className={cn('text-sm text-destructive', errorClassName)}
-        >
-          {error}
-        </p>
+      {showFooter && (
+        <div className='flex items-center justify-between gap-2'>
+          <div className='min-w-0 flex-1'>
+            {hasError && (
+              <p
+                id={errorId}
+                role='alert'
+                className={cn('text-sm text-destructive', errorClassName)}
+              >
+                {error}
+              </p>
+            )}
+          </div>
+          {showCharacterCount && characterCount && (
+            <p
+              className='shrink-0 text-[13px] text-[#A0A0AB] tracking-[-0.45%]'
+              aria-live='polite'
+            >
+              {characterCount.current} / {characterCount.max}
+            </p>
+          )}
+        </div>
       )}
     </div>
   )
