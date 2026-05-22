@@ -32,7 +32,7 @@ const REVENUE_ITEMS: RevenueItemProps[] = [
 const Dashboard = () => {
   return (
     <DashboardLayout pageTitle='My Portfolio' contentClassName='max-w-[1160px]'>
-      <div className='flex flex-col sm:flex-row gap-y-4 sm:gap-x-8'>
+      <div className='flex flex-col gap-y-4 sm:flex-row sm:gap-x-8'>
         <div className='w-full flex flex-col gap-y-4'>
           <DashboardStats />
           <OverviewChart />
