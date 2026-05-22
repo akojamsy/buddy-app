@@ -10,18 +10,16 @@ import {
   SidebarFooter,
   SidebarHeader,
 } from '#components/ui/sidebar'
+import { selectNavUserName } from '@/redux/features/auth/authSlice'
+import { useAppSelector } from '@/redux/store'
 import { BuddyFullLogo } from '@/assets/svg'
 
-const data = {
-  user: {
-    name: 'Theresa milly',
-    role: 'Influencer',
-    avatar:
-      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=144&h=144&fit=crop&crop=face',
-  },
-}
+const SIDEBAR_USER_AVATAR =
+  'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=144&h=144&fit=crop&crop=face'
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const name = useAppSelector(selectNavUserName)
+
   return (
     <Sidebar
       collapsible='icon'
@@ -35,7 +33,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavProjects />
       </SidebarContent>
       <SidebarFooter className='p-0'>
-        <NavUser user={data.user} />
+        <NavUser
+          user={{
+            name,
+            role: 'Influencer',
+            avatar: SIDEBAR_USER_AVATAR,
+          }}
+        />
       </SidebarFooter>
     </Sidebar>
   )

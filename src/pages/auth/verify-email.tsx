@@ -1,51 +1,77 @@
 import { CustomButton, OtpInput, OTP_DIGIT_COUNT } from '@/components/fragments'
 import { AuthCardHeader } from '@/components/fragments/auth-card-header'
+import {
+  useResendOtpMutation,
+  useVerifyEmailMutation,
+} from '@/redux/services/authApi'
+import {
+  getStorageItem,
+  removeStorageItem,
+  setStorageItem,
+} from '#hooks/use-local-storage'
 import { useState } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
+import { toast } from 'sonner'
 import routesPath from '@/utils/routes-path'
+import { formatOtpValue } from '@/utils/helpers'
 import { AuthLayout } from './components/auth-layout'
 import { AuthCard } from './components/auth-card'
 import { EmailVerifiedSuccess } from './components/email-verified-success'
 
 type VerifyEmailLocationState = {
   email?: string
+  otp?: string
 }
 
 type VerifyEmailStep = 'form' | 'success'
 
+const EMAIL_VERIFIED_STORAGE_KEY = 'email-verified'
+
+const getInitialStep = (): VerifyEmailStep =>
+  getStorageItem(EMAIL_VERIFIED_STORAGE_KEY) ? 'success' : 'form'
+
 const VerifyEmail = () => {
   const location = useLocation()
-  const email = (location.state as VerifyEmailLocationState | null)?.email
-  const [step, setStep] = useState<VerifyEmailStep>('form')
-  const [code, setCode] = useState('')
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const locationState = location.state as VerifyEmailLocationState | null
+  const email = locationState?.email
+  const [step, setStep] = useState<VerifyEmailStep>(getInitialStep)
+  const [code, setCode] = useState(() => formatOtpValue(locationState?.otp))
+  const [verifyEmail, { isLoading: isSubmitting }] = useVerifyEmailMutation()
+  const [resendOtp, { isLoading: isResending }] = useResendOtpMutation()
 
   const isComplete = code.length === OTP_DIGIT_COUNT
+
+  const handleResend = async () => {
+    if (!email) return
+    const result = await resendOtp(email).unwrap()
+    if (result.success === true) {
+      toast.success(result.message)
+      setCode(formatOtpValue(result.data.otp))
+    }
+  }
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault()
     if (!isComplete || !email) return
 
-    setIsSubmitting(true)
-    try {
-      // TODO: connect to OTP verification API
-      await Promise.resolve({ email, code })
+    const result = await verifyEmail({ email, otp: code }).unwrap()
+    if (result.success === true) {
+      toast.success(result.message)
+      setStorageItem(EMAIL_VERIFIED_STORAGE_KEY, true)
       setStep('success')
-    } finally {
-      setIsSubmitting(false)
     }
   }
 
-  // TODO: Add a toaster for when there is no email in the location state
-
-  if (!email) {
+  if (!email && step !== 'success') {
     return <Navigate to={routesPath.SIGNUP} replace />
   }
 
   if (step === 'success') {
     return (
       <AuthLayout>
-        <EmailVerifiedSuccess />
+        <EmailVerifiedSuccess
+          onContinue={() => removeStorageItem(EMAIL_VERIFIED_STORAGE_KEY)}
+        />
       </AuthLayout>
     )
   }
@@ -82,9 +108,11 @@ const VerifyEmail = () => {
           Didn&apos;t get the mail?{' '}
           <button
             type='button'
-            className='font-medium text-[#FF8600] hover:underline cursor-pointer ml-1'
+            onClick={handleResend}
+            disabled={isResending}
+            className='font-medium text-[#FF8600] hover:underline cursor-pointer ml-1 disabled:opacity-50 disabled:cursor-not-allowed'
           >
-            Resend
+            {isResending ? 'Sending…' : 'Resend'}
           </button>
         </p>
       </AuthCard>

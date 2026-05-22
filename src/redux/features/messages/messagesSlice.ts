@@ -19,6 +19,7 @@ const messagesSlice = createSlice({
   name: 'messages',
   initialState,
   reducers: {
+    reset: () => initialState,
     sendMessage: (
       state,
       action: PayloadAction<{ threadId: string; content: string }>,
@@ -39,7 +40,7 @@ const messagesSlice = createSlice({
   },
 })
 
-export const { sendMessage } = messagesSlice.actions
+export const { reset, sendMessage } = messagesSlice.actions
 export const messagesSliceReducer = messagesSlice.reducer
 
 export const selectSentMessagesForThread = (

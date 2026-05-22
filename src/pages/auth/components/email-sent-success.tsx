@@ -1,16 +1,30 @@
 import { MailboxSentIcon } from '@/assets/svg'
 import { CustomButton } from '@/components/fragments'
+import { useResendOtpMutation } from '@/redux/services/authApi'
 import { useNavigate } from 'react-router-dom'
 import routesPath from '@/utils/routes-path'
+import { formatOtpValue } from '@/utils/helpers'
 import { AuthCard } from './auth-card'
+import { toast } from 'sonner'
 
 type EmailSentSuccessProps = {
   email: string
-  onResend?: () => void
+  otp?: string
 }
 
-export function EmailSentSuccess({ email, onResend }: EmailSentSuccessProps) {
+export function EmailSentSuccess({ email, otp = '' }: EmailSentSuccessProps) {
   const navigate = useNavigate()
+  const [resendOtp, { isLoading }] = useResendOtpMutation()
+
+  const handleResend = async () => {
+    const result = await resendOtp(email).unwrap()
+    if (result.success === true) {
+      toast.success(result.message)
+      navigate(routesPath.VERIFY_EMAIL, {
+        state: { email, otp: formatOtpValue(result.data.otp) },
+      })
+    }
+  }
 
   return (
     <AuthCard className='flex flex-col items-center text-center'>
@@ -31,7 +45,9 @@ export function EmailSentSuccess({ email, onResend }: EmailSentSuccessProps) {
       <CustomButton
         type='button'
         className='mt-[21px] cursor-pointer w-fit lg:px-[2.156rem]'
-        onClick={() => navigate(routesPath.VERIFY_EMAIL, { state: { email } })}
+        onClick={() =>
+          navigate(routesPath.VERIFY_EMAIL, { state: { email, otp } })
+        }
       >
         Confirm Email
       </CustomButton>
@@ -40,10 +56,11 @@ export function EmailSentSuccess({ email, onResend }: EmailSentSuccessProps) {
         Didn&apos;t get the mail?{' '}
         <button
           type='button'
-          onClick={onResend}
-          className='font-medium text-[#FF8600] hover:underline cursor-pointer ml-1'
+          onClick={handleResend}
+          disabled={isLoading}
+          className='font-medium text-[#FF8600] hover:underline cursor-pointer ml-1 disabled:opacity-50 disabled:cursor-not-allowed'
         >
-          Resend
+          {isLoading ? 'Sending…' : 'Resend'}
         </button>
       </p>
     </AuthCard>

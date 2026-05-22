@@ -11,7 +11,7 @@ import {
   sendMessage,
 } from '@/redux/features/messages/messagesSlice'
 import { useAppDispatch, useAppSelector } from '@/redux/store'
-import { Camera, Mic, Paperclip, Smile } from 'lucide-react'
+import { Camera, Mic, PanelLeft, Paperclip, Smile } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import {
   getConversationForThread,
@@ -24,6 +24,7 @@ type AttachmentMessage = Extract<ChatMessage, { content: 'attachment' }>
 
 type MessageConversationProps = {
   thread: MessageThreadData
+  onOpenThreads?: () => void
 }
 
 function DateSeparator({ label }: { label: string }) {
@@ -99,7 +100,7 @@ function ChatMessage({
 
       <div
         className={cn(
-          'max-w-[200px] leading-[100%] text-[16px] font-normal',
+          'max-w-[min(200px,75vw)] leading-[100%] text-[16px] font-normal',
           isIncoming &&
             !isAttachment &&
             'bg-[#EFEFEF] px-[11px] py-[12.38px] text-[#2E2E2E] rounded-r-[12px] rounded-tl-[12px]',
@@ -134,7 +135,10 @@ function ChatMessage({
   )
 }
 
-export function MessageConversation({ thread }: MessageConversationProps) {
+export function MessageConversation({
+  thread,
+  onOpenThreads,
+}: MessageConversationProps) {
   const dispatch = useAppDispatch()
   const [message, setMessage] = useState('')
   const sentMessages = useAppSelector((state) =>
@@ -162,9 +166,19 @@ export function MessageConversation({ thread }: MessageConversationProps) {
   }
 
   return (
-    <div className='flex min-h-0 flex-1 flex-col rounded-[12px] bg-[#FAFAFA] px-[40px] py-[39px]'>
-      <header className='flex items-center justify-between border-b border-[#E8E8ED] pb-4'>
-        <div className='flex items-center gap-3'>
+    <div className='flex min-h-0 flex-1 flex-col overflow-hidden rounded-[12px] bg-[#FAFAFA] px-4 py-4 md:px-[40px] md:py-[39px]'>
+      <header className='flex shrink-0 items-center justify-between border-b border-[#E8E8ED] pb-4'>
+        <div className='flex min-w-0 items-center gap-3'>
+          {onOpenThreads ? (
+            <button
+              type='button'
+              onClick={onOpenThreads}
+              aria-label='Open message threads'
+              className='flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-[#8D8D8D] hover:bg-[#EFEFEF] md:hidden'
+            >
+              <PanelLeft className='size-5' strokeWidth={1.75} />
+            </button>
+          ) : null}
           <div className='relative shrink-0'>
             <div className='size-[45px] overflow-hidden rounded-full bg-[#E8E8ED]'>
               <img
@@ -214,7 +228,7 @@ export function MessageConversation({ thread }: MessageConversationProps) {
         </div>
       </header>
 
-      <div className='flex flex-1 flex-col gap-3.5 overflow-y-auto py-8'>
+      <div className='flex min-h-0 flex-1 flex-col gap-3.5 overflow-y-auto py-4 md:py-8'>
         {messages.map((message) => (
           <ChatMessage
             key={message.id}
@@ -226,7 +240,7 @@ export function MessageConversation({ thread }: MessageConversationProps) {
         ))}
       </div>
 
-      <footer className='rounded-[12px] bg-[#D9D9D9] py-7 pr-8 pl-10 shadow-[0_-2px_15px_0_rgba(0,0,0,0.1)]'>
+      <footer className='shrink-0 rounded-[12px] bg-[#D9D9D9] py-4 pr-4 pl-6 shadow-[0_-2px_15px_0_rgba(0,0,0,0.1)] md:py-7 md:pr-8 md:pl-10'>
         <form
           className='flex items-center gap-3'
           onSubmit={(event) => {
@@ -245,7 +259,7 @@ export function MessageConversation({ thread }: MessageConversationProps) {
               onChange={(event) => setMessage(event.target.value)}
               placeholder='Write Something...'
               aria-label='Write a message'
-              className='h-10 w-full rounded-full border-[#FF8600] bg-white pr-28 pl-12 text-sm text-[#3B3B45] outline-none placeholder:text-[#BDBDBD] focus-visible:border'
+              className='h-10 w-full rounded-full border-[#FF8600] bg-white pr-20 pl-12 text-sm text-[#3B3B45] outline-none placeholder:text-[#BDBDBD] focus-visible:border md:pr-28'
             />
             <div className='absolute top-1/2 right-4 flex -translate-y-1/2 cursor-pointer items-center gap-2.5 text-[#A0A0AB]'>
               <Paperclip className='size-5 cursor-pointer' strokeWidth={1.75} />

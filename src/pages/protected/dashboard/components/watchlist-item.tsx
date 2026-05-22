@@ -46,7 +46,10 @@ export function WatchlistItem({
 }: WatchlistItemProps) {
   return (
     <div
-      className={cn('rounded-[12px] bg-[#F6F6F6] px-4 py-[10.2px]', className)}
+      className={cn(
+        'w-full rounded-[12px] bg-[#F6F6F6] px-4 py-[10.2px]',
+        className,
+      )}
     >
       <div className='flex w-full items-center justify-between'>
         <div className='min-w-[96px]'>
@@ -76,7 +79,7 @@ export function WatchlistItem({
           </p>
         </div>
 
-        <div className='w-full'>
+        <div className='min-w-0 flex-1'>
           <ChartContainer
             config={watchlistChartConfig}
             className='mt-1 aspect-auto h-[72px] w-full'

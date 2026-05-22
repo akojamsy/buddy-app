@@ -2,10 +2,12 @@ import { CustomButton } from '@/components/fragments'
 import { AuthCardHeader } from '@/components/fragments/auth-card-header'
 import { Input } from '#components/ui/input'
 import { EmailIcon, EyeIcon, EyeslashIcon, LockIcon } from '@/assets/svg'
+import { useSigninMutation } from '@/redux/services/authApi'
 import routesPath from '@/utils/routes-path'
 import { Formik, type FormikHelpers } from 'formik'
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { toast } from 'sonner'
 import * as Yup from 'yup'
 import { AuthCard } from './components/auth-card'
 import { AuthFooterLinks } from './components/auth-footer-links'
@@ -48,15 +50,16 @@ function fieldError(
 const SignIn = () => {
   const [showPassword, setShowPassword] = useState(false)
   const navigate = useNavigate()
+  const [signin] = useSigninMutation()
 
-  const submitHandler = (
-    values: SignInValues,
-    { setSubmitting }: FormikHelpers<SignInValues>,
-  ) => {
-    console.log(values)
-    // resetForm()
-    navigate(routesPath.DASHBOARD)
-    setSubmitting(false)
+  const submitHandler = async (values: SignInValues) => {
+    const result = await signin({
+      email: values.email,
+      password: values.password,
+    }).unwrap()
+    if (result.success === true) {
+      navigate(routesPath.DASHBOARD)
+    }
   }
 
   return (

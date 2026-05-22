@@ -16,6 +16,7 @@ import {
   UserOneIcon,
 } from '@/assets/svg'
 import { useSignupMutation } from '@/redux/services/authApi'
+import { formatOtpValue } from '@/utils/helpers'
 
 const EMAIL_MAX_LENGTH = 60
 const PASSWORD_MAX_LENGTH = 15
@@ -37,6 +38,10 @@ const signUpSchema = Yup.object({
       PASSWORD_MAX_LENGTH,
       `Password must be at most ${PASSWORD_MAX_LENGTH} characters`,
     )
+    .matches(/[a-z]/, 'Password must contain a lowercase letter')
+    .matches(/[A-Z]/, 'Password must contain an uppercase letter')
+    .matches(/[0-9]/, 'Password must contain a number')
+    .matches(/[^A-Za-z0-9]/, 'Password must contain a special character')
     .required('Password is required'),
 })
 
@@ -57,7 +62,7 @@ function fieldError(
 }
 
 type SignUpFormProps = {
-  onSuccess: (email: string) => void
+  onSuccess: (email: string, otp: string) => void
 }
 
 export function SignUpForm({ onSuccess }: SignUpFormProps) {
@@ -77,7 +82,9 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
     })
       .unwrap()
       .then((res) => {
-        onSuccess(values.email)
+        if (res.success === true) {
+          onSuccess(values.email, formatOtpValue(res.data?.otp))
+        }
         setSubmitting(false)
       })
       .catch((err) => {

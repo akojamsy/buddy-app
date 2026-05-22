@@ -4,7 +4,11 @@ import { useNavigate } from 'react-router-dom'
 import routesPath from '@/utils/routes-path'
 import { AuthCard } from './auth-card'
 
-export function EmailVerifiedSuccess() {
+type EmailVerifiedSuccessProps = {
+  onContinue?: () => void
+}
+
+export function EmailVerifiedSuccess({ onContinue }: EmailVerifiedSuccessProps) {
   const navigate = useNavigate()
 
   return (
@@ -25,7 +29,10 @@ export function EmailVerifiedSuccess() {
       <CustomButton
         type='button'
         className='mt-7 cursor-pointer w-fit lg:px-[2.156rem]'
-        onClick={() => navigate(routesPath.DASHBOARD)}
+        onClick={() => {
+          onContinue?.()
+          navigate(routesPath.DASHBOARD)
+        }}
       >
         Continue
       </CustomButton>

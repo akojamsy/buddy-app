@@ -9,6 +9,7 @@ type SignUpStep = 'landing' | 'form' | 'success'
 const SignUp = () => {
   const [step, setStep] = useState<SignUpStep>('landing')
   const [email, setEmail] = useState('')
+  const [otp, setOtp] = useState('')
 
   return (
     <AuthLayout>
@@ -17,13 +18,14 @@ const SignUp = () => {
       ) : null}
       {step === 'form' ? (
         <SignUpForm
-          onSuccess={(submittedEmail) => {
+          onSuccess={(submittedEmail, submittedOtp) => {
             setEmail(submittedEmail)
+            setOtp(submittedOtp)
             setStep('success')
           }}
         />
       ) : null}
-      {step === 'success' ? <EmailSentSuccess email={email} /> : null}
+      {step === 'success' ? <EmailSentSuccess email={email} otp={otp} /> : null}
     </AuthLayout>
   )
 }

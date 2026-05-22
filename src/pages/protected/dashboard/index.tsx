@@ -40,7 +40,7 @@ const Dashboard = () => {
           <PotentialMembers />
         </div>
 
-        <div className='w-full max-w-[330px] space-y-4'>
+        <div className='w-full space-y-4 sm:max-w-[330px]'>
           <CardWrapper>
             <div className='flex items-center justify-between'>
               <h2 className='text-lg md:text-xl font-bold text-[#3B3B45]'>

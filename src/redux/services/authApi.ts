@@ -1,3 +1,4 @@
+import { setAuthUser } from '../features/auth/authSlice'
 import { baseApi } from './baseApi'
 
 interface SigninRequest {
@@ -6,9 +7,11 @@ interface SigninRequest {
 }
 
 interface SigninResponse {
+  success: boolean
+  message: string
   data: {
-    access_token: string
     user: Record<string, unknown>
+    token: string
   }
 }
 
@@ -17,6 +20,37 @@ interface SignupRequest {
   last_name: string
   email: string
   password: string
+}
+
+interface SignupResponse {
+  success: boolean
+  message: string
+  data: {
+    token?: string
+    otp: number | string
+  }
+}
+
+interface VerifyEmailRequest {
+  email: string
+  otp: string
+}
+
+interface ResendOtpResponse {
+  success: boolean
+  message: string
+  data: {
+    otp: number | string
+  }
+}
+
+interface VerifyEmailResponse {
+  success: boolean
+  message: string
+  data: {
+    user: Record<string, unknown>
+    token: string
+  }
 }
 
 export const authApi = baseApi.injectEndpoints({
@@ -30,25 +64,53 @@ export const authApi = baseApi.injectEndpoints({
       async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled
-          console.log(data)
-        } catch (error: unknown) {
-          console.error('Login failed:', error)
+          if (data.success && data.data?.user && data.data?.token) {
+            dispatch(
+              setAuthUser({
+                user: data.data.user,
+                token: data.data.token,
+              }),
+            )
+          }
+        } catch {
           // Error handling is done by baseQueryInterceptor
         }
       },
     }),
-    signup: builder.mutation<void, SignupRequest>({
+    signup: builder.mutation<SignupResponse, SignupRequest>({
       query: (credentials) => ({
         url: `/admin/register`,
+        method: 'POST',
+        body: credentials,
+      }),
+    }),
+
+    resendOtp: builder.mutation<ResendOtpResponse, string>({
+      query: (email) => ({
+        url: `/admin/resend-otp`,
+        method: 'POST',
+        body: { email: email },
+      }),
+    }),
+
+    verifyEmail: builder.mutation<VerifyEmailResponse, VerifyEmailRequest>({
+      query: (credentials) => ({
+        url: `/admin/verify-otp`,
         method: 'POST',
         body: credentials,
       }),
       async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled
-          console.log(data)
-        } catch (error: unknown) {
-          console.error('Signup failed:', error)
+          if (data.success && data.data?.user && data.data?.token) {
+            dispatch(
+              setAuthUser({
+                user: data.data.user,
+                token: data.data.token,
+              }),
+            )
+          }
+        } catch {
           // Error handling is done by baseQueryInterceptor
         }
       },
@@ -56,4 +118,9 @@ export const authApi = baseApi.injectEndpoints({
   }),
 })
 
-export const { useSigninMutation, useSignupMutation } = authApi
+export const {
+  useSigninMutation,
+  useSignupMutation,
+  useResendOtpMutation,
+  useVerifyEmailMutation,
+} = authApi

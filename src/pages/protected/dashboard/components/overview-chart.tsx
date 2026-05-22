@@ -3,7 +3,16 @@
 import { ChartContainer, type ChartConfig } from '#components/ui/chart'
 import { cn } from '#lib/utils'
 import { useEffect, useState } from 'react'
-import { Bar, BarChart, CartesianGrid, Cell, XAxis, YAxis } from 'recharts'
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts'
+import { OverviewBarTooltip } from '../../../../components/fragments/overview-bar-tooltip'
 import {
   OVERVIEW_CHART_MAX,
   OVERVIEW_TAB_CONFIG,
@@ -46,6 +55,9 @@ const overviewChartConfig = {
 
 export function OverviewChart() {
   const [activeTab, setActiveTab] = useState<OverviewTab>('Robbin Hood')
+  const [tooltipPosition, setTooltipPosition] = useState<
+    { x: number; y: number } | undefined
+  >(undefined)
   const barSize = useOverviewBarSize()
   const { data: chartData, highlightMonthIndex } =
     OVERVIEW_TAB_CONFIG[activeTab]
@@ -105,6 +117,51 @@ export function OverviewChart() {
             ticks={[0, 200, 400, 600, 800, 1000]}
             tick={{ fill: '#9CA3AF', fontSize: 11 }}
             width={36}
+          />
+          <Tooltip
+            shared={false}
+            offset={0}
+            position={tooltipPosition}
+            allowEscapeViewBox={{ x: true, y: true }}
+            cursor={{ fill: 'rgba(0, 0, 0, 0.04)' }}
+            content={({ active, payload, coordinate }) => {
+              const dataKey = payload?.[0]?.dataKey
+
+              if (dataKey === 'secondary') {
+                return (
+                  <OverviewBarTooltip
+                    active={active}
+                    payload={payload}
+                    coordinate={coordinate}
+                    label='Purchase Value'
+                    placement='left-bar'
+                    onSyncPosition={setTooltipPosition}
+                  />
+                )
+              }
+
+              if (dataKey === 'primary') {
+                return (
+                  <OverviewBarTooltip
+                    active={active}
+                    payload={payload}
+                    coordinate={coordinate}
+                    label='Market Value'
+                    placement='right-bar'
+                    onSyncPosition={setTooltipPosition}
+                  />
+                )
+              }
+
+              return null
+            }}
+            wrapperStyle={{ outline: 'none', zIndex: 20 }}
+            contentStyle={{
+              background: 'transparent',
+              border: 'none',
+              padding: 0,
+              boxShadow: 'none',
+            }}
           />
           <Bar
             dataKey='secondary'

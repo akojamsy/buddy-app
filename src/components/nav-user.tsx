@@ -1,6 +1,8 @@
 import { Avatar, AvatarFallback, AvatarImage } from '#components/ui/avatar'
-import { CustomButton } from './fragments'
+import { LogoutModal } from '@/components/modals'
 import { LogoutIcon } from '@/assets/svg'
+import { useState } from 'react'
+import { CustomButton } from './fragments'
 
 export function NavUser({
   user,
@@ -11,6 +13,8 @@ export function NavUser({
     avatar: string
   }
 }) {
+  const [logoutOpen, setLogoutOpen] = useState(false)
+
   const initials = user.name
     .split(' ')
     .map((part) => part[0])
@@ -30,18 +34,22 @@ export function NavUser({
 
         <div className='text-center font-lexend'>
           <p className='text-base font-semibold text-[#3B3B45]'>{user.name}</p>
-          <p className='mt-0.5 text-sm text-[#818187]'>{user.role}</p>
+          <p className='mt-0.5 text-xs text-[#818187]'>{user.role}</p>
         </div>
 
         <CustomButton
+          type='button'
           variant='outline'
           className='flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-[12px] border-0 bg-[#FF860029] font-lexend text-[#FF8600] hover:bg-[#FF860033] active:bg-[#FF860040]'
           size='sm'
+          onClick={() => setLogoutOpen(true)}
         >
           <LogoutIcon className='size-4 text-[#FF8600]' />
           <span className='text-sm font-semibold text-[#FF8600]'>Logout</span>
         </CustomButton>
       </div>
+
+      <LogoutModal open={logoutOpen} onOpenChange={setLogoutOpen} />
     </div>
   )
 }

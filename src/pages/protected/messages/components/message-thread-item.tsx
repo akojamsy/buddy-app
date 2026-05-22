@@ -25,7 +25,7 @@ export function MessageThreadItem({
       onClick={onSelect}
       aria-current={isActive ? 'true' : undefined}
       className={cn(
-        'flex w-full cursor-pointer items-center px-2.5 py-[5px] text-left ',
+        'flex w-full cursor-pointer items-center px-2.5 py-[5px] text-left md:w-[265px]',
         isActive &&
           'rounded-[12px] bg-white shadow-[0_14px_25px_0_rgba(30,30,30,0.1)]',
         className,
@@ -48,15 +48,16 @@ export function MessageThreadItem({
         <span className='text-[9px] font-normal leading-[100%] text-[#CDCDCD]'>
           {time}
         </span>
-        {unreadCount != null && unreadCount > 0 ? (
-          <span className='inline-flex size-[18px] items-center justify-center rounded-full bg-[#FF8600] text-[10px] font-semibold leading-none text-white'>
-            {unreadCount}
-          </span>
-        ) : isRead ? (
-          <span className='inline-flex size-[18px] items-center justify-center rounded-full bg-[#E8F4FF]'>
-            <CheckIcon className='size-2.5 [&_path]:fill-[#2F80ED]' />
-          </span>
-        ) : null}
+        {!isActive &&
+          (unreadCount != null && unreadCount > 0 ? (
+            <span className='inline-flex size-[18px] items-center justify-center rounded-full bg-[#FF8600] text-[10px] font-semibold leading-none text-white'>
+              {unreadCount}
+            </span>
+          ) : isRead ? (
+            <span className='inline-flex size-[18px] items-center justify-center rounded-full bg-[#E8F4FF]'>
+              <CheckIcon className='size-2.5 [&_path]:fill-[#2F80ED]' />
+            </span>
+          ) : null)}
       </div>
     </button>
   )

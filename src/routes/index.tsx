@@ -12,6 +12,8 @@ import {
 import routesPath from '@/utils/routes-path'
 import { Suspense } from 'react'
 import { Route, Routes } from 'react-router-dom'
+import { GuestRoute } from './guest-route'
+import { ProtectedRoute } from './protected-route'
 
 const {
   SIGNUP,
@@ -29,15 +31,19 @@ export default function AppRoute() {
   return (
     <Suspense>
       <Routes>
-        <Route path={SIGNUP} element={<SignUp />} />
-        <Route path={SIGNIN} element={<SignIn />} />
-        <Route path={VERIFY_EMAIL} element={<VerifyEmail />} />
-        <Route path={DASHBOARD} element={<Dashboard />} />
-        <Route path={MY_GROUP} element={<MyGroup />} />
-        <Route path={MESSAGES} element={<Messages />} />
-        <Route path={ANALYTICS} element={<Analytics />} />
-        <Route path={PACK} element={<Pack />} />
-        <Route path={SETTINGS} element={<Settings />} />
+        <Route element={<GuestRoute />}>
+          <Route path={SIGNUP} element={<SignUp />} />
+          <Route path={SIGNIN} element={<SignIn />} />
+          <Route path={VERIFY_EMAIL} element={<VerifyEmail />} />
+        </Route>
+        <Route element={<ProtectedRoute />}>
+          <Route path={DASHBOARD} element={<Dashboard />} />
+          <Route path={MY_GROUP} element={<MyGroup />} />
+          <Route path={MESSAGES} element={<Messages />} />
+          <Route path={ANALYTICS} element={<Analytics />} />
+          <Route path={PACK} element={<Pack />} />
+          <Route path={SETTINGS} element={<Settings />} />
+        </Route>
       </Routes>
     </Suspense>
   )
