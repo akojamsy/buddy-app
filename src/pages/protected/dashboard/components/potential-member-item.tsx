@@ -1,4 +1,4 @@
-import { ArrowUpIcon, ThreadIcon } from '@/assets/svg'
+import { ThreadIcon } from '@/assets/svg'
 import { cn } from '#lib/utils'
 import type { PotentialMemberData } from '@/utils/overview-data'
 

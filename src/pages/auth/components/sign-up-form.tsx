@@ -116,7 +116,6 @@ export function SignUpForm({ onSuccess }: SignUpFormProps) {
           handleSubmit,
           setFieldValue,
           isValid,
-          isSubmitting,
         }) => (
           <form onSubmit={handleSubmit} className='mt-6 flex flex-col gap-3'>
             <div className='grid grid-cols-1 sm:grid-cols-2 gap-y-3 sm:gap-5'>

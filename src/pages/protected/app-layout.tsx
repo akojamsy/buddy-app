@@ -9,33 +9,23 @@ import { BellIcon, SearchIcon } from '@/assets/svg'
 import { Button } from '#components/ui/button'
 import { Input } from '#components/ui/input'
 import { cn } from '@/lib/utils'
-import { Bell, Plus } from 'lucide-react'
+import { Plus } from 'lucide-react'
 
 interface DashboardLayoutProps {
   pageTitle?: string | React.ReactNode
   //   breadcrumb?: Array<BreadcrumbItem>
   children: React.ReactNode
-  className?: string
   /** Max-width wrapper for header + page content (e.g. dashboard cards) */
   contentClassName?: string
   innerClassName?: string
-  onClick?: () => void
-  onClickText?: string
-  icon?: React.ReactNode
-  showOwnHeader?: boolean
 }
 
 export default function DashboardLayout({
   pageTitle,
   //   breadcrumb,
-  onClick,
-  onClickText,
-  icon,
   children,
-  className,
   contentClassName,
   innerClassName,
-  showOwnHeader = true,
 }: DashboardLayoutProps) {
   return (
     <SidebarProvider>
