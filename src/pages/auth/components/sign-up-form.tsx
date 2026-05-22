@@ -1,7 +1,6 @@
 import { CustomButton } from '@/components/fragments'
 import { Input } from '#components/ui/input'
 import { Formik } from 'formik'
-import { CircleCheck } from 'lucide-react'
 import { useState } from 'react'
 import * as Yup from 'yup'
 import { AuthCard } from './auth-card'
@@ -16,6 +15,7 @@ import {
   LockIcon,
   UserOneIcon,
 } from '@/assets/svg'
+import { useSignupMutation } from '@/redux/services/authApi'
 
 const EMAIL_MAX_LENGTH = 60
 const PASSWORD_MAX_LENGTH = 15
@@ -56,8 +56,34 @@ function fieldError(
   return touched && error ? error : undefined
 }
 
-export function SignUpForm() {
+type SignUpFormProps = {
+  onSuccess: (email: string) => void
+}
+
+export function SignUpForm({ onSuccess }: SignUpFormProps) {
   const [showPassword, setShowPassword] = useState(false)
+
+  const [signup, { isLoading }] = useSignupMutation()
+
+  const handleSubmit = (
+    values: SignUpValues,
+    setSubmitting: (isSubmitting: boolean) => void,
+  ) => {
+    signup({
+      first_name: values.firstName,
+      last_name: values.lastName,
+      email: values.email,
+      password: values.password,
+    })
+      .unwrap()
+      .then((res) => {
+        onSuccess(values.email)
+        setSubmitting(false)
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+  }
 
   return (
     <AuthCard>
@@ -70,9 +96,8 @@ export function SignUpForm() {
         initialValues={initialValues}
         validationSchema={signUpSchema}
         validateOnMount
-        onSubmit={(values) => {
-          // TODO: connect to registration API
-          console.log(values)
+        onSubmit={(values, { setSubmitting }) => {
+          handleSubmit(values, setSubmitting)
         }}
       >
         {({
@@ -87,7 +112,7 @@ export function SignUpForm() {
           isSubmitting,
         }) => (
           <form onSubmit={handleSubmit} className='mt-6 flex flex-col gap-3'>
-            <div className='grid grid-cols-2 gap-5'>
+            <div className='grid grid-cols-1 sm:grid-cols-2 gap-y-3 sm:gap-5'>
               <Input
                 floatingLabel
                 label='First Name'
@@ -185,7 +210,7 @@ export function SignUpForm() {
               type='submit'
               className='mt-7.5 cursor-pointer'
               disabled={!isValid}
-              loading={isSubmitting}
+              loading={isLoading}
               loadingText='Creating account...'
             >
               Create account

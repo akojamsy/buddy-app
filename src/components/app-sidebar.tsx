@@ -4,82 +4,39 @@ import * as React from 'react'
 
 import { NavProjects } from '#components/nav-projects'
 import { NavUser } from '#components/nav-user'
-import { TeamSwitcher } from '#components/team-switcher'
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarRail,
 } from '#components/ui/sidebar'
-import {
-  GalleryVerticalEndIcon,
-  FrameIcon,
-  PieChartIcon,
-  MapIcon,
-} from 'lucide-react'
+import { BuddyFullLogo } from '@/assets/svg'
 
-// This is sample data.
 const data = {
   user: {
-    name: 'shadcn',
-    email: 'm@example.com',
-    avatar: '/avatars/shadcn.jpg',
+    name: 'Theresa milly',
+    role: 'Influencer',
+    avatar:
+      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=144&h=144&fit=crop&crop=face',
   },
-  teams: [
-    {
-      name: 'Acme Inc',
-      logo: <GalleryVerticalEndIcon />,
-      plan: 'Enterprise',
-    },
-  ],
-  projects: [
-    {
-      name: 'My Portfolio',
-      url: '#',
-      icon: <FrameIcon />,
-    },
-    {
-      name: 'My Group',
-      url: '#',
-      icon: <PieChartIcon />,
-    },
-    {
-      name: 'Messages',
-      url: '#',
-      icon: <MapIcon />,
-    },
-    {
-      name: 'Analytics',
-      url: '#',
-      icon: <MapIcon />,
-    },
-    {
-      name: 'Pack',
-      url: '#',
-      icon: <MapIcon />,
-    },
-    {
-      name: 'Settings',
-      url: '#',
-      icon: <MapIcon />,
-    },
-  ],
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
-    <Sidebar collapsible='icon' {...props}>
-      <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+    <Sidebar
+      collapsible='icon'
+      className='border-r-0 group-data-[side=left]:border-r-0 bg-[#F9F9F9] font-lexend [--sidebar:#FFFFFF]'
+      {...props}
+    >
+      <SidebarHeader className='flex justify-center items-center pt-7 pb-10'>
+        <BuddyFullLogo />
       </SidebarHeader>
-      <SidebarContent>
-        <NavProjects projects={data.projects} />
+      <SidebarContent className='px-0'>
+        <NavProjects />
       </SidebarContent>
-      <SidebarFooter>
+      <SidebarFooter className='p-0'>
         <NavUser user={data.user} />
       </SidebarFooter>
-      <SidebarRail />
     </Sidebar>
   )
 }

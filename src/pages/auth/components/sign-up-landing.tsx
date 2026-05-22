@@ -34,7 +34,7 @@ export function SignUpLanding({ onEmailSignUp }: SignUpLandingProps) {
           className='flex h-10 w-full items-center justify-center gap-2.5 rounded-[6px] border border-[#E4E4E9] bg-white text-sm font-medium text-[#5B6871] transition-colors hover:bg-[#FAFAFA] cursor-pointer'
         >
           <GoogleIcon className='size-5' />
-          Sign up with Googl
+          Sign up with Google
         </button>
       </div>
 
