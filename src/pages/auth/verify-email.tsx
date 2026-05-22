@@ -1,9 +1,11 @@
 import { CustomButton, OtpInput, OTP_DIGIT_COUNT } from '@/components/fragments'
 import { AuthCardHeader } from '@/components/fragments/auth-card-header'
+import { setAuthUser } from '@/redux/features/auth/authSlice'
 import {
   useResendOtpMutation,
   useVerifyEmailMutation,
 } from '@/redux/services/authApi'
+import { useAppDispatch } from '@/redux/store'
 import {
   getStorageItem,
   removeStorageItem,
@@ -12,6 +14,7 @@ import {
 import { useState } from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 import { toast } from 'sonner'
+import { EMAIL_VERIFIED_STORAGE_KEY } from '@/utils/helpers'
 import routesPath from '@/utils/routes-path'
 import { formatOtpValue } from '@/utils/helpers'
 import { AuthLayout } from './components/auth-layout'
@@ -25,16 +28,21 @@ type VerifyEmailLocationState = {
 
 type VerifyEmailStep = 'form' | 'success'
 
-const EMAIL_VERIFIED_STORAGE_KEY = 'email-verified'
+type PendingAuth = {
+  user: Record<string, unknown>
+  token: string
+}
 
 const getInitialStep = (): VerifyEmailStep =>
   getStorageItem(EMAIL_VERIFIED_STORAGE_KEY) ? 'success' : 'form'
 
 const VerifyEmail = () => {
+  const dispatch = useAppDispatch()
   const location = useLocation()
   const locationState = location.state as VerifyEmailLocationState | null
   const email = locationState?.email
   const [step, setStep] = useState<VerifyEmailStep>(getInitialStep)
+  const [pendingAuth, setPendingAuth] = useState<PendingAuth | null>(null)
   const [code, setCode] = useState(() => formatOtpValue(locationState?.otp))
   const [verifyEmail, { isLoading: isSubmitting }] = useVerifyEmailMutation()
   const [resendOtp, { isLoading: isResending }] = useResendOtpMutation()
@@ -56,7 +64,9 @@ const VerifyEmail = () => {
 
     const result = await verifyEmail({ email, otp: code }).unwrap()
     if (result.success === true) {
-      toast.success(result.message)
+      if (result.data?.user && result.data?.token) {
+        setPendingAuth({ user: result.data.user, token: result.data.token })
+      }
       setStorageItem(EMAIL_VERIFIED_STORAGE_KEY, true)
       setStep('success')
     }
@@ -70,7 +80,12 @@ const VerifyEmail = () => {
     return (
       <AuthLayout>
         <EmailVerifiedSuccess
-          onContinue={() => removeStorageItem(EMAIL_VERIFIED_STORAGE_KEY)}
+          onContinue={() => {
+            removeStorageItem(EMAIL_VERIFIED_STORAGE_KEY)
+            if (pendingAuth) {
+              dispatch(setAuthUser(pendingAuth))
+            }
+          }}
         />
       </AuthLayout>
     )

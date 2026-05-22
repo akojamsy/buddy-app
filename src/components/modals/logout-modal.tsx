@@ -50,7 +50,7 @@ export function LogoutModal({ open, onOpenChange }: LogoutModalProps) {
         </DialogHeader>
 
         <DialogDescription className='text-center text-sm text-[#5B6871] my-4'>
-          Are you sure youo want to logout?
+          Are you sure you want to logout?
         </DialogDescription>
 
         <DialogFooter className='flex-row gap-3 sm:justify-end'>

@@ -66,7 +66,7 @@ export default function DashboardLayout({
                 variant='ghost'
                 size='icon'
                 aria-label='Add'
-                className='size-12 shrink-0 rounded-full bg-white hover:bg-[#F0F0F2]'
+                className='size-12 shrink-0 rounded-full bg-white hover:bg-[#F0F0F2] cursor-pointer'
               >
                 <Plus className='size-5 text-[#3B3B45]' strokeWidth={2} />
               </Button>
@@ -76,7 +76,7 @@ export default function DashboardLayout({
                 variant='ghost'
                 size='icon'
                 aria-label='Notifications'
-                className='relative size-12 shrink-0 rounded-full bg-white hover:bg-[#F0F0F2]'
+                className='relative size-12 shrink-0 rounded-full bg-white hover:bg-[#F0F0F2] cursor-pointer'
               >
                 <BellIcon className='md:size-6 text-[#3B3B45]' />
                 <span

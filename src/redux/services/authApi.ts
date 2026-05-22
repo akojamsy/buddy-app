@@ -99,21 +99,6 @@ export const authApi = baseApi.injectEndpoints({
         method: 'POST',
         body: credentials,
       }),
-      async onQueryStarted(_arg, { dispatch, queryFulfilled }) {
-        try {
-          const { data } = await queryFulfilled
-          if (data.success && data.data?.user && data.data?.token) {
-            dispatch(
-              setAuthUser({
-                user: data.data.user,
-                token: data.data.token,
-              }),
-            )
-          }
-        } catch {
-          // Error handling is done by baseQueryInterceptor
-        }
-      },
     }),
   }),
 })
